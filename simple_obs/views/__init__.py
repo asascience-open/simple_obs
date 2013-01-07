@@ -1,0 +1,1 @@
+import simple_obs.views.data

@@ -1,0 +1,5 @@
+"TOA5","Pier F Datalogger","CR2xx","No_SN","CR200X.Std.02","PierF v3.CR2","650","Public"
+"TIMESTAMP","RECORD","BattV","windspeed","winddir","AirTemp","RH","bp","value","sample_flag"
+"TS","RN","Volts","meters/sec","Degrees","Deg C","%","mbar","",""
+"","","","","","","","","",""
+"2012-12-12 21:26:11",76259,16.58479,0.784,106.706,14.232,58.925,1009.051,0,0

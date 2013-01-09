@@ -5,7 +5,7 @@ LOG_FILE=True
 
 STATIONS =  {
               "PierJ" :   {
-                "location" : (-70,46),
+                "location" : (118.185,33.73166666666667),
                 "instant" : os.path.join(os.path.dirname(__file__), "..","tests","resources","pier_j_instant.dat"),
                 "historic" : os.path.join(os.path.dirname(__file__), "..","tests","resources","pier_j_historic.dat"),
                 "frequency" : 6,
@@ -13,7 +13,7 @@ STATIONS =  {
               },
 
               "PierS" :   {
-                "location" : (-71,46),
+                "location" : (118.225,33.69333333333333),
                 "instant" : os.path.join(os.path.dirname(__file__), "..","tests","resources","pier_s_instant.dat"),
                 "historic" : os.path.join(os.path.dirname(__file__), "..","tests","resources","pier_s_historic.dat"),
                 "frequency" : 6,
@@ -21,7 +21,7 @@ STATIONS =  {
               },
 
               "PierF" :   {
-                "location" : (-70,45),
+                "location" : (118.26666666666667,33.74833333333333),
                 "instant" : os.path.join(os.path.dirname(__file__), "..","tests","resources","pier_f_instant.dat"),
                 "historic" : os.path.join(os.path.dirname(__file__), "..","tests","resources","pier_f_historic.dat"),
                 "frequency" : 6,

@@ -1,0 +1,44 @@
+html, body {
+  margin     : 0;
+  padding    : 0;
+  height     : 100%;
+  width      : 100%;
+  font-family : tahoma,helvetica,sans-serif;
+}
+
+@media only screen and (max-width: 600px) {
+  html, body {
+    height  : 117%;
+  }
+}
+
+#map {
+  width    : 100%;
+  position : relative;
+  height   : 100%;
+}
+
+#legend {
+  position   : absolute;
+  background : white;
+  bottom     : 3px;
+  right      : 3px;
+}
+
+.olControlAttribution {
+  left   : 3px;
+  bottom : 5px !important; 
+  font-size : 10px !important;
+}
+
+.olBingAttribution a {
+  color : white;
+}
+
+.olBingAttribution img {
+  border : none;
+}
+
+.obs {
+  font-size : 10px;
+}

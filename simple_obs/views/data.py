@@ -1,9 +1,19 @@
-from flask import url_for, request, redirect, jsonify
+from flask import url_for, request, redirect, jsonify, render_template, redirect, make_response
 from simple_obs import app
 import simple_obs.utils as utils
 import csv
 import os
 from dateutil.parser import parse
+
+@app.route('/', methods=['GET'])
+def index():
+  return render_template("index.html")
+
+@app.route('/img/blank.png', methods=['GET'])
+def blank():
+  resp = make_response(open(os.path.join(os.path.dirname(__file__), "..","static","img","blank.png")).read())
+  resp.content_type = "image/png"
+  return resp
 
 @app.route('/stations', methods=['GET'])
 @utils.jsonp

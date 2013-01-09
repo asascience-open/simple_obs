@@ -6,6 +6,7 @@ import os
 from dateutil.parser import parse
 
 @app.route('/stations', methods=['GET'])
+@utils.jsonp
 def stations():
     paths = app.config.get("STATIONS")
 
@@ -23,6 +24,7 @@ def stations():
     return jsonify({"stations" : stats })
 
 @app.route('/query/<string:station_id>', methods=['GET'])
+@utils.jsonp
 def data(station_id):
 
     station_data = get_station_data(station_id)

@@ -50,7 +50,11 @@ function init() {
               for (var t in f.attributes.obs) {
                 for (var i = 0; i < f.attributes.obs[t].length; i++) {
                   if (f.attributes.obs[t][i].standard == 'wind_speed') {
-                    spd = String(f.attributes.obs[t][i].value + ' ' + f.attributes.obs[t][i].units);
+                    if (f.attributes.obs[t][i].units == "m/s") {
+                      ms_value = f.attributes.obs[t][i].value;
+                      knots_value = Math.round(ms_value * 1.94384 * 1000) / 1000;
+                    }
+                    spd = String(knots_value) + " knots (" + String(ms_value) + ' ' + f.attributes.obs[t][i].units + ")";
                   }
                   else if (f.attributes.obs[t][i].standard == 'wind_direction_from_true_north') {
                     dir = String(Math.round(f.attributes.obs[t][i].value)) + ' \xB0';
@@ -92,7 +96,11 @@ function init() {
               for (var t in f.attributes.obs) {
                 for (var i = 0; i < f.attributes.obs[t].length; i++) {
                   if (f.attributes.obs[t][i].standard == 'wind_speed') {
-                    spd = Number(f.attributes.obs[t][i].value);
+                    if (f.attributes.obs[t][i].units == 'm/s') {
+                      spd = Number(f.attributes.obs[t][i].value * 1.94384);
+                    } else {
+                      spd = Number(f.attributes.obs[t][i].value);
+                    }
                   }
                   else if (f.attributes.obs[t][i].standard == 'wind_direction_from_true_north') { 
                     dir = Number(f.attributes.obs[t][i].value);
@@ -241,7 +249,13 @@ function popup(f) {
   for (var t in f.attributes.obs) {
     html.push('<tr><td colspan=2 align=center>' + isoDateToDate(t).format("mmm d, yyyy h:MM:ss tt (Z)") + '</td></tr>');
     for (var i = 0; i < f.attributes.obs[t].length; i++) {
-      obs[f.attributes.obs[t][i].name] = '<tr><td><a href="javascript:watchObs(\'' + f.attributes.descr + '\',\'' + f.attributes.obs[t][i].name + '\')">' + f.attributes.obs[t][i].name + '</a></td><td>' + f.attributes.obs[t][i].value + ' ' + f.attributes.obs[t][i].units + '</td></tr>';
+      if (f.attributes.obs[t][i].units == "m/s") {
+        ms_value = f.attributes.obs[t][i].value
+        knots_value = Math.round(ms_value * 1.94384 * 1000) / 1000;
+        obs[f.attributes.obs[t][i].name] = '<tr><td><a href="javascript:watchObs(\'' + f.attributes.descr + '\',\'' + f.attributes.obs[t][i].name + '\')">' + f.attributes.obs[t][i].name + '</a></td><td>' + knots_value + ' knots (' + ms_value + ' ' + f.attributes.obs[t][i].units + ')</td></tr>';
+      } else {
+        obs[f.attributes.obs[t][i].name] = '<tr><td><a href="javascript:watchObs(\'' + f.attributes.descr + '\',\'' + f.attributes.obs[t][i].name + '\')">' + f.attributes.obs[t][i].name + '</a></td><td>' + f.attributes.obs[t][i].value + ' ' + f.attributes.obs[t][i].units + '</td></tr>';
+      }
     }
   }
 
@@ -260,7 +274,7 @@ function popup(f) {
      'popup'
     ,new OpenLayers.LonLat(centroid.x,centroid.y)
     ,null
-    ,'<table class="obs" style="width:200px">' + html.join('') + '</table>'
+    ,'<table class="obs" style="width:225px">' + html.join('') + '</table>'
     ,null
     ,true
     ,function() {

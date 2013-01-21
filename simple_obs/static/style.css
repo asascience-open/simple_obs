@@ -4,6 +4,7 @@ html, body {
   height     : 100%;
   width      : 100%;
   font-family : tahoma,helvetica,sans-serif;
+  overflow    : hidden;
 }
 
 @media only screen and (max-width: 600px) {
@@ -25,20 +26,52 @@ html, body {
   right      : 3px;
 }
 
-.olControlAttribution {
-  left   : 3px;
-  bottom : 5px !important; 
-  font-size : 10px !important;
-}
-
-.olBingAttribution a {
-  color : white;
-}
-
-.olBingAttribution img {
-  border : none;
-}
-
 .obs {
   font-size : 10px;
+}
+
+#timeseriesTitle {
+  position   : absolute;
+  top        : 0px;
+  width      : 100%;
+  height     : 15px;
+  background : white;
+  visibility : hidden;
+  font-size  : 8px;
+}
+#timeseriesTitle table {
+  width : 100%;
+}
+#timeseriesTitle td {
+  text-align : center;
+}
+
+#timeseriesGraph {
+  position   : absolute;
+  top        : 15px;
+  width      : 100%;
+  height     : 70px;
+  background : white;
+  visibility : hidden;
+}
+
+#timeseriesFooter {
+  position   : absolute;
+  top        : 80px;
+  width      : 100%;
+  height     : 18px;
+  background : white;
+  visibility : hidden;
+  font-size  : 8px;
+}
+#timeseriesFooter table {
+  width : 100%;
+}
+#timeseriesFooter td {
+  text-align : center;
+  color : gray;
+}
+
+.dir {
+  z-index : 1001;
 }

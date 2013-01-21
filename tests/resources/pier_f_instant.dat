@@ -1,5 +1,5 @@
-"TOA5","Pier F Datalogger","CR2xx","No_SN","CR200X.Std.02","PierF v3.CR2","650","Public"
-"TIMESTAMP","RECORD","BattV","windspeed","winddir","AirTemp","RH","bp","value","sample_flag"
-"TS","RN","Volts","meters/sec","Degrees","Deg C","%","mbar","",""
-"","","","","","","","","",""
-"2012-12-12 21:26:11",76259,16.58479,0.784,106.706,14.232,58.925,1009.051,0,0
+"TOA5","Pier F","CR800","25183","CR800.Std.25","CPU:NOAA_PierF-rev07.CR8","57774","Public"
+"TIMESTAMP","RECORD","batt_volt","wind_speed","wind_direc","wind_gust","air_temp","rh","bp","file_name","file_content"
+"TS","RN","VDC","m/s","deg True","m/s","deg C","%","mbar","",""
+"","","","","","","","","","",""
+"2013-01-17 01:22:22.4",1055,14.82022,0.49,210.0216,0.4703999,17.088,40.591,1032.612,"9410670.mt","LA/LB PORTS|9410670 Pier F||||2013 01 17 01 18|00002 00209 00006 10320 01674 00000000000000000000000000000000 300|CORMS 00000000000000000000000000000000 10111010000000000000000000000000"

@@ -1,6 +1,10 @@
 var map;
-// switch this to 'dev' to get random data
-var mode = "";
+var obs   = {};
+var times = {};
+var timeseriesRefreshInterval = 5000; // miliseconds
+var maxTimeseriesCount        = 500;  // # of obs in graph (moving window)
+
+var mode = "dev";
 
 // Get rid of address bar on iphone/ipod
 var fixSize = function() {
@@ -96,10 +100,10 @@ function init() {
                 }
               }
               if (typeof(spd) == 'number' && typeof(dir) == 'number') {
-                return 'http://explorer.glos.us/icon.php?size=115,115&cpt=0,30&mag=' + Math.round(spd) + '&dir=' + Math.round(dir) + '&barb&noCircle&shadow=white';
+                return 'http://72.44.60.22/glos/icon.php?size=115,115&cpt=0,30&mag=' + Math.round(spd) + '&dir=' + Math.round(dir) + '&barb&noCircle&shadow=white';
               }
               else {
-                return '/img/blank.png';
+                return '/static/img/blank.png';
               }
             }
           }
@@ -124,13 +128,11 @@ function init() {
 
   map = new OpenLayers.Map('map',{
     controls: [
-       new OpenLayers.Control.Attribution()
-      ,new OpenLayers.Control.TouchNavigation({
+      new OpenLayers.Control.TouchNavigation({
         dragPanOptions: {
           enableKinetic: true
         }
       })
-      ,new OpenLayers.Control.Zoom()
       ,ctl
     ]
     ,layers : [
@@ -145,12 +147,19 @@ function init() {
   });
 
   getStations();
+
+  window.onresize = function(e) {
+    if (map.watchObs) {
+      updateTimeseries(map.watchObs.station,map.watchObs.obs);
+    }
+    fixSize();
+  }
 }
 
 function getStations() {
   var jsonp = new OpenLayers.Protocol.Script();
   jsonp.createRequest(
-     '/stations'
+    '/stations'
     ,{}
     ,function(json) {
       var features = [];
@@ -174,19 +183,43 @@ function getStations() {
 function getObs(f,l) {
   var jsonp = new OpenLayers.Protocol.Script();
   jsonp.createRequest(
-     f.attributes.data
+    f.attributes.data 
     ,{'format' : 'vars'}
     ,function(json) {
-      if (mode == "dev") {
-        for (var t in json.data[0]) {
-          for (var i = 0; i < json.data[0][t].length; i++) {
+      for (var t in json.data[0]) {
+        for (var i = 0; i < json.data[0][t].length; i++) {
+          if (mode == "dev") {
+            // THIS IS DUMMY DATA!
             if (json.data[0][t][i].standard == 'wind_speed') {
               json.data[0][t][i].value = Math.round(500 * Math.random() + 1) / 10;
             }
+            // THIS IS DUMMY DATA!
             else if (json.data[0][t][i].standard == 'wind_direction_from_true_north') {
               json.data[0][t][i].value = Math.round(3600 * Math.random() + 1) / 10;
             }
           }
+          if (!obs[f.attributes.descr]) {
+            obs[f.attributes.descr] = {};
+          }
+          if (!obs[f.attributes.descr][json.data[0][t][i].name]) {
+            obs[f.attributes.descr][json.data[0][t][i].name] = [];
+          }
+          obs[f.attributes.descr][json.data[0][t][i].name].push(json.data[0][t][i].value);
+          obs[f.attributes.descr][json.data[0][t][i].name] = obs[f.attributes.descr][json.data[0][t][i].name].slice(-1 * maxTimeseriesCount);
+          if (!times[f.attributes.descr]) {
+            times[f.attributes.descr] = {};
+          }
+          if (!times[f.attributes.descr][json.data[0][t][i].name]) {
+            times[f.attributes.descr][json.data[0][t][i].name] = [];
+          }
+          if (mode == "dev") {
+            // times[f.attributes.descr][json.data[0][t][i].name].push(isoDateToDate(t));
+            // THIS IS DUMMY DATA!
+            times[f.attributes.descr][json.data[0][t][i].name].push(new Date());
+          }
+
+          times[f.attributes.descr][json.data[0][t][i].name] = times[f.attributes.descr][json.data[0][t][i].name].slice(-1 * maxTimeseriesCount);
+          updateTimeseries(f.attributes.descr,json.data[0][t][i].name);
         }
       }
       f.attributes.obs = json.data[0];
@@ -194,7 +227,7 @@ function getObs(f,l) {
       if (map.popup && map.popup.name == f.attributes.name) {
         popup(f);
       }
-      setTimeout(function(){getObs(f,l)},5000);
+      setTimeout(function(){getObs(f,l)},timeseriesRefreshInterval);
     }
   );
 }
@@ -203,9 +236,9 @@ function popup(f) {
   var obs = {};
   var html = ['<tr><td colspan=2 align=center><b>' + f.attributes.descr + '</b></td></tr>'];
   for (var t in f.attributes.obs) {
-    html.push('<tr><td colspan=2 align=center>' + t + '</td></tr>');
+    html.push('<tr><td colspan=2 align=center>' + isoDateToDate(t).format("mmm d, yyyy h:MM:ss tt (Z)") + '</td></tr>');
     for (var i = 0; i < f.attributes.obs[t].length; i++) {
-      obs[f.attributes.obs[t][i].name] = '<tr><td><a href="javascript:alert(1)">' + f.attributes.obs[t][i].name + '</a></td><td>' + f.attributes.obs[t][i].value + ' ' + f.attributes.obs[t][i].units + '</td></tr>';
+      obs[f.attributes.obs[t][i].name] = '<tr><td><a href="javascript:watchObs(\'' + f.attributes.descr + '\',\'' + f.attributes.obs[t][i].name + '\')">' + f.attributes.obs[t][i].name + '</a></td><td>' + f.attributes.obs[t][i].value + ' ' + f.attributes.obs[t][i].units + '</td></tr>';
     }
   }
 
@@ -238,4 +271,84 @@ function popup(f) {
   OpenLayers.Event.observe(map.popup.contentDiv,'touchend',OpenLayers.Function.bindAsEventListener(function(e) {
     OpenLayers.Event.stop(e);
   }));
+}
+
+function watchObs(station,obs) {
+  map.watchObs = {
+     station : station
+    ,obs     : obs
+  };
+  updateTimeseries(station,obs);
+}
+
+function updateTimeseries(s,o) {
+  if (map.watchObs && map.watchObs.station == s && map.watchObs.obs == o) {
+    document.getElementById('timeseriesTitle').style.visibility = 'visible';
+    document.getElementById('timeseriesGraph').style.visibility = 'visible';
+    document.getElementById('timeseriesFooter').style.visibility = 'visible';
+
+    if (times[s][o][0] != null) {
+      document.getElementById('timeseriesTitle').innerHTML = '<table><tr><td>' + o + ' @ ' + s + ' from ' + times[s][o][0].format("mmm d h:MM:ss tt (Z)") + '</td></tr></table>';
+    }
+
+    var d = [];
+    for (var i = 0; i < obs[s][o].length; i++) {
+      d.push([i,Number(new RegExp(/direction/i).test(o) ? 0 : obs[s][o][i])]);
+    }
+    var p = $.plot(
+      $('#timeseriesGraph')
+      ,[{
+         data        : d
+        ,color       : '#8DA0CB'
+        ,curvedLines : {show : d.length > 1 && !new RegExp(/direction/i).test(o)}
+        ,lines       : {show : false}
+      }]
+      ,{
+         grid   : {backgroundColor : {colors : ['#fff','#eee']},borderWidth : 1,borderColor : '#99BBE8'}
+        ,legend : {show : false}
+        ,series : {curvedLines : {active : d.length > 1 && !new RegExp(/direction/i).test(o)}}
+        ,xaxis  : {
+           show : false
+          ,min  : new RegExp(/direction/i).test(o) ? -1 : null
+          ,max  : new RegExp(/direction/i).test(o) ? d.length : null
+        }
+        ,yaxis  : {
+           min  : (new RegExp(/speed/i).test(o) ? 0 : null)
+          ,font : {
+             family : 'tahoma,helvetica,sans-serif'
+            ,size   : 8
+          }
+          ,show : !new RegExp(/direction/i).test(o)
+        }
+      }
+    );
+    if (new RegExp(/direction/i).test(o)) {
+      for (var i = 0; i < obs[s][o].length; i++) {
+        var val = Math.round((obs[s][o][i] + 180) % 360);
+        var off = p.pointOffset({x : i,y : 0});
+        $('#timeseriesGraph').prepend('<div class="dir" style="position:absolute;left:' + (off.left-80/2) + 'px;top:' + (off.top-(80/2)) + 'px;background-image:url(\'http://72.44.60.22/mobex/img/arrows/' + 80 + 'x' + 80 + '.dir' + val + '.' + '7570B3' + '.png\');width:' + 80 + 'px;height:' + 80 + 'px;"></div>');
+      }
+    }
+  }
+}
+
+function closeTimeseries() {
+  delete map.watchObs;
+  document.getElementById('timeseriesTitle').style.visibility = 'hidden';
+  document.getElementById('timeseriesGraph').style.visibility = 'hidden';
+  document.getElementById('timeseriesFooter').style.visibility = 'hidden';
+}
+
+function isoDateToDate(s) {
+  // 2010-01-01 00:00:00
+  var p = s.split(' ');
+  var ymd = p[0].split('-');
+  var hm = p[1].split(':');
+  return new Date(
+     ymd[0]
+    ,ymd[1] - 1
+    ,ymd[2]
+    ,hm[0]
+    ,hm[1]
+  );
 }

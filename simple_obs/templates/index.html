@@ -6,10 +6,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <link rel="stylesheet" type="text/css" href="{{ url_for('.static', filename='style.css') }}"/>
-  </head>
-  <body onload="init()">
+    <script type="text/javascript" src="{{ url_for('.static', filename='jquery.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('.static', filename='jquery.flot.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('.static', filename='jquery.flot.curvedLines.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('.static', filename='dateFormat.js') }}"></script> 
     <script type="text/javascript" src="{{ url_for('.static', filename='OpenLayers-closure.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('.static', filename='map.js') }}"></script> 
+  </head>
+  <body onload="init()">
     <div id="map"></div>
+    <div id="timeseriesTitle" onclick="closeTimeseries()"></div>
+    <div id="timeseriesGraph" onclick="closeTimeseries()"></div>
+    <div id ="timeseriesFooter" onclick="closeTimeseries()">
+      <table>
+        <tr>
+          <td>click graph to close</td>
+        </tr>
+      </table>
+    </div>
   </body>
 </html>

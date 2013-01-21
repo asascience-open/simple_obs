@@ -1,5 +1,0 @@
-"TOA5","Pier S Datalogger","CR2xx","No_SN","CR200X.Std.02","PierJ_S.CR2","21537","Public"
-"TIMESTAMP","RECORD","BattV","windspeed","winddir","value","sample_flag"
-"TS","RN","Volts","meters/sec","Degrees","",""
-"","","","","","",""
-"2012-12-12 21:26:37",167,16.3657,0,204.0146,0,0

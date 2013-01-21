@@ -1,5 +1,5 @@
-"TOA5","Pier J Datalogger","CR2xx","No_SN","CR200X.Std.02","PierJ_S.CR2","21537","Public"
-"TIMESTAMP","RECORD","BattV","windspeed","winddir","value","sample_flag"
-"TS","RN","Volts","meters/sec","Degrees","",""
-"","","","","","",""
-"2012-12-12 21:26:30",103,18.51298,0.882,50.54094,0,0
+"TOA5","Pier J","CR800","25181","CR800.Std.25","CPU:NOAA_PierJ-rev07.CR8","48754","Public"
+"TIMESTAMP","RECORD","batt_volt","wind_speed","wind_direc","wind_gust","air_temp","rh","bp","file_name","file_content"
+"TS","RN","VDC","m/s","deg True","m/s","deg C","%","mbar","",""
+"","","","","","","","","","",""
+"2013-01-16 18:22:51.29",1177,0,0.392,62.23568,0.4116,0,0,0,"9410665.mt","LA/LB PORTS|9410665 Pier J||||2013 01 16 18 18|00001 00062 00005 99999 99999 00000000000000000000000000000000 300|CORMS 00000000000000000000000000000000 10111010000000000000000000000000"

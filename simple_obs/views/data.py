@@ -9,12 +9,6 @@ from dateutil.parser import parse
 def index():
   return render_template("index.html")
 
-@app.route('/img/blank.png', methods=['GET'])
-def blank():
-  resp = make_response(open(os.path.join(os.path.dirname(__file__), "..","static","img","blank.png")).read())
-  resp.content_type = "image/png"
-  return resp
-
 @app.route('/stations', methods=['GET'])
 @utils.jsonp
 def stations():
@@ -42,22 +36,17 @@ def data(station_id):
         return jsonify({"error" : "No station found with name %s" % station_id })
 
     data_path = None
-    starting = request.args.get("starting", None)
-    ending = request.args.get("ending", None)
-
-    rows = 10
-    if starting is None and ending is None:
-        data_path = station_data.get("instant")
-        rows = 1
-    else:
-        data_path = station_data.get("historic")
-        starting = parse(starting)
-        ending = parse(ending)
-        rows = int(abs((ending - starting).total_seconds()) / 60 / station_data.get("frequency"))
-        
     format = request.args.get("format", "rows")
+    records = request.args.get("records", None)
 
-    data = get_data(data_path, rows, format, starting, ending)
+    if records is None:
+        data_paths = station_data.get("instant")
+        records = 1
+    else:
+        data_paths = filter(None, station_data.get("history", None))
+        records = int(records)
+
+    data = get_data(data_paths, records, format)
     return jsonify({"data" : data })
 
 def get_station_data(station_id):
@@ -104,33 +93,49 @@ def get_var_data(header, data):
 
     return output
 
-def get_data(filename, rows, format, starting, ending):
-    header = None
-    with open(filename) as f:
-        header = f.readline()
-        header = f.readline().replace("\"", "").replace("\n","").split(",")
-        data = utils.tail(f, rows)
+def get_data(filenames, records, format):
+    
+    output = []
 
-    newd = []
-    for d in data:
-        try:
-            d = d.replace("\"", "").split(",")
-            assert d[0] != ''
-            date = parse(d[0])
-            if starting is not None and ending is not None:
-                if date > starting and date < ending:
-                    newd.append(d) 
-            else:
+    if not isinstance(filenames, list):
+        filenames = [filenames]
+
+    for filename in filenames:
+
+        header = None
+
+        with open(filename) as f:
+            header = f.readline()
+            header = f.readline().replace("\"", "").replace("\n","").split(",")
+            data = utils.tail(f, records)
+
+        newd = []
+        for d in data:
+            try:
+                d = d.replace("\"", "").split(",")
+                assert d[0] != ''
+                date = parse(d[0])
                 newd.append(d)
-        except:
-            continue
+            except:
+                continue
 
-    data = newd
+        data = newd
 
-    if format == "vars":
-        output = get_var_data(header, data)
-    else:
-        output = get_row_data(header, data)
+        if format == "vars":
+            var = get_var_data(header, data)
+            for v in var:
+                found = False
+                for x in output:
+                    if x.keys()[0] == v.keys()[0]:
+                        x[x.keys()[0]] += v[x.keys()[0]]
+                        found = True
+                        break
+                if not found:
+                    output.append(v)
+            # Sort by datetime
+            output.sort(key=lambda x: x.keys()[0])
+        else:
+            output.append(get_row_data(header, data))
 
     return output
 

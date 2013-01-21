@@ -4,7 +4,7 @@ var times = {};
 var timeseriesRefreshInterval = 5000; // miliseconds
 var maxTimeseriesCount        = 500;  // # of obs in graph (moving window)
 
-var mode = "dev";
+var mode = "";
 
 // Get rid of address bar on iphone/ipod
 var fixSize = function() {
@@ -198,6 +198,7 @@ function getObs(f,l) {
               json.data[0][t][i].value = Math.round(3600 * Math.random() + 1) / 10;
             }
           }
+
           if (!obs[f.attributes.descr]) {
             obs[f.attributes.descr] = {};
           }
@@ -212,10 +213,12 @@ function getObs(f,l) {
           if (!times[f.attributes.descr][json.data[0][t][i].name]) {
             times[f.attributes.descr][json.data[0][t][i].name] = [];
           }
+        
           if (mode == "dev") {
-            // times[f.attributes.descr][json.data[0][t][i].name].push(isoDateToDate(t));
             // THIS IS DUMMY DATA!
             times[f.attributes.descr][json.data[0][t][i].name].push(new Date());
+          } else {
+            times[f.attributes.descr][json.data[0][t][i].name].push(isoDateToDate(t));
           }
 
           times[f.attributes.descr][json.data[0][t][i].name] = times[f.attributes.descr][json.data[0][t][i].name].slice(-1 * maxTimeseriesCount);

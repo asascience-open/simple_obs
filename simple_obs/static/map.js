@@ -385,5 +385,6 @@ function isoDateToDate(s) {
     ,ymd[2]
     ,hm[0]
     ,hm[1]
+    ,hm[2]
   );
 }

@@ -104,10 +104,13 @@ def get_data(filenames, records, format):
 
         header = None
 
-        with open(filename) as f:
-            header = f.readline()
-            header = f.readline().replace("\"", "").replace("\n","").split(",")
-            data = utils.tail(f, records)
+        try:
+            with open(filename) as f:
+                header = f.readline()
+                header = f.readline().replace("\"", "").replace("\n","").split(",")
+                data = utils.tail(f, records)
+        except:
+            app.logger.warn("Can't find file: %s" % filename)
 
         newd = []
         for d in data:

@@ -4,7 +4,7 @@ var times = {};
 var timeseriesRefreshInterval = 5000; // miliseconds
 var maxTimeseriesCount        = 500;  // # of obs in graph (moving window)
 
-var mode = "";
+var mode = "dev";
 
 // Get rid of address bar on iphone/ipod
 var fixSize = function() {
@@ -194,51 +194,66 @@ function getObs(f,l) {
     f.attributes.data 
     ,{'format' : 'vars'}
     ,function(json) {
-      for (var t in json.data[0]) {
-        for (var i = 0; i < json.data[0][t].length; i++) {
+      // cheat! put all sensors under the max(t)
+      var availableTimes = [];
+      var obsData = [];
+      for (var j = 0; j < json.data.length; j++) {
+        for (var t in json.data[j]) {
+          for (var i = 0; i < json.data[j][t].length; i++) {
+            obsData.push(json.data[j][t][i]);
+          }
+          availableTimes.push(t);
+        }
+      }
+      availableTimes.sort();
+      var data = {}
+      data[availableTimes[availableTimes.length - 1]] = obsData;
+
+      for (var t in data) {
+        for (var i = 0; i < data[t].length; i++) {
           if (mode == "dev") {
             // THIS IS DUMMY DATA!
-            if (json.data[0][t][i].standard == 'wind_speed') {
-              json.data[0][t][i].value = Math.round(500 * Math.random() + 1) / 10;
+            if (data[t][i].standard == 'wind_speed') {
+              data[t][i].value = Math.round(500 * Math.random() + 1) / 10;
             }
             // THIS IS DUMMY DATA!
-            else if (json.data[0][t][i].standard == 'wind_direction_from_true_north') {
-              json.data[0][t][i].value = Math.round(3600 * Math.random() + 1) / 10;
+            else if (data[t][i].standard == 'wind_direction_from_true_north') {
+              data[t][i].value = Math.round(3600 * Math.random() + 1) / 10;
             }
           }
 
           if (!obs[f.attributes.descr]) {
             obs[f.attributes.descr] = {};
           }
-          if (!obs[f.attributes.descr][json.data[0][t][i].name]) {
-            obs[f.attributes.descr][json.data[0][t][i].name] = [];
+          if (!obs[f.attributes.descr][data[t][i].name]) {
+            obs[f.attributes.descr][data[t][i].name] = [];
           }
-          obs[f.attributes.descr][json.data[0][t][i].name].push(json.data[0][t][i].value);
-          obs[f.attributes.descr][json.data[0][t][i].name] = obs[f.attributes.descr][json.data[0][t][i].name].slice(-1 * maxTimeseriesCount);
+          obs[f.attributes.descr][data[t][i].name].push(data[t][i].value);
+          obs[f.attributes.descr][data[t][i].name] = obs[f.attributes.descr][data[t][i].name].slice(-1 * maxTimeseriesCount);
           if (!times[f.attributes.descr]) {
             times[f.attributes.descr] = {};
           }
-          if (!times[f.attributes.descr][json.data[0][t][i].name]) {
-            times[f.attributes.descr][json.data[0][t][i].name] = [];
-          }
-        
-          if (mode == "dev") {
-            // THIS IS DUMMY DATA!
-            times[f.attributes.descr][json.data[0][t][i].name].push(new Date());
-          } else {
-            times[f.attributes.descr][json.data[0][t][i].name].push(isoDateToDate(t));
+          if (!times[f.attributes.descr][data[t][i].name]) {
+            times[f.attributes.descr][data[t][i].name] = [];
           }
 
-          times[f.attributes.descr][json.data[0][t][i].name] = times[f.attributes.descr][json.data[0][t][i].name].slice(-1 * maxTimeseriesCount);
-          updateTimeseries(f.attributes.descr,json.data[0][t][i].name);
+          if (mode == "dev") {
+            // THIS IS DUMMY DATA!
+            times[f.attributes.descr][data[t][i].name].push(new Date());
+          } else {
+            times[f.attributes.descr][data[t][i].name].push(isoDateToDate(t));
+          }
+
+          times[f.attributes.descr][data[t][i].name] = times[f.attributes.descr][data[t][i].name].slice(-1 * maxTimeseriesCount);
+          updateTimeseries(f.attributes.descr,data[t][i].name);
         }
       }
-      f.attributes.obs = json.data[0];
+      f.attributes.obs = data;
       l.redraw();
       if (map.popup && map.popup.name == f.attributes.name) {
         popup(f);
       }
-      setTimeout(function(){getObs(f,l)},timeseriesRefreshInterval);
+      // setTimeout(function(){getObs(f,l)},timeseriesRefreshInterval);
     }
   );
 }

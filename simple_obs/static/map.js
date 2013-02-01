@@ -51,8 +51,8 @@ function init() {
                 for (var i = 0; i < f.attributes.obs[t].length; i++) {
                   if (f.attributes.obs[t][i].standard == 'wind_speed') {
                     if (f.attributes.obs[t][i].units == "m/s") {
-                      ms_value = f.attributes.obs[t][i].value;
-                      knots_value = Math.round(ms_value * 1.94384 * 1000) / 1000;
+                      ms_value = Math.round(f.attributes.obs[t][i].value * 10) / 10;
+                      knots_value = Math.round(ms_value * 1.94384 * 10) / 10;
                     }
                     spd = String(knots_value) + " knots (" + String(ms_value) + ' ' + f.attributes.obs[t][i].units + ")";
                   }
@@ -264,12 +264,15 @@ function popup(f) {
   for (var t in f.attributes.obs) {
     html.push('<tr><td colspan=2 align=center>' + isoDateToDate(t).format("mmm d, yyyy h:MM:ss tt (Z)") + '</td></tr>');
     for (var i = 0; i < f.attributes.obs[t].length; i++) {
+      value = Math.round(f.attributes.obs[t][i].value * 10) / 10;
       if (f.attributes.obs[t][i].units == "m/s") {
-        ms_value = f.attributes.obs[t][i].value
-        knots_value = Math.round(ms_value * 1.94384 * 1000) / 1000;
-        obs[f.attributes.obs[t][i].name] = '<tr><td><a href="javascript:watchObs(\'' + f.attributes.descr + '\',\'' + f.attributes.obs[t][i].name + '\')">' + f.attributes.obs[t][i].name + '</a></td><td>' + knots_value + ' knots (' + ms_value + ' ' + f.attributes.obs[t][i].units + ')</td></tr>';
+        knots_value = Math.round(value * 1.94384 * 10) / 10;
+        obs[f.attributes.obs[t][i].name] = '<tr><td><a href="javascript:watchObs(\'' + f.attributes.descr + '\',\'' + f.attributes.obs[t][i].name + '\')">' + f.attributes.obs[t][i].name + '</a></td><td>' + knots_value + ' knots (' + value + ' ' + f.attributes.obs[t][i].units + ')</td></tr>';
+      } else if (f.attributes.obs[t][i].units == "°C") {
+        f_value = Math.round((value * 1.8 + 32 )* 10) / 10;
+        obs[f.attributes.obs[t][i].name] = '<tr><td><a href="javascript:watchObs(\'' + f.attributes.descr + '\',\'' + f.attributes.obs[t][i].name + '\')">' + f.attributes.obs[t][i].name + '</a></td><td>' + f_value + ' °F (' + value + ' ' + f.attributes.obs[t][i].units + ')</td></tr>';
       } else {
-        obs[f.attributes.obs[t][i].name] = '<tr><td><a href="javascript:watchObs(\'' + f.attributes.descr + '\',\'' + f.attributes.obs[t][i].name + '\')">' + f.attributes.obs[t][i].name + '</a></td><td>' + f.attributes.obs[t][i].value + ' ' + f.attributes.obs[t][i].units + '</td></tr>';
+        obs[f.attributes.obs[t][i].name] = '<tr><td><a href="javascript:watchObs(\'' + f.attributes.descr + '\',\'' + f.attributes.obs[t][i].name + '\')">' + f.attributes.obs[t][i].name + '</a></td><td>' + value + ' ' + f.attributes.obs[t][i].units + '</td></tr>';
       }
     }
   }

@@ -4,7 +4,7 @@ var times = {};
 var timeseriesRefreshInterval = 5000; // miliseconds
 var maxTimeseriesCount        = 500;  // # of obs in graph (moving window)
 
-var mode = "";
+var mode = "dev";
 
 // Get rid of address bar on iphone/ipod
 var fixSize = function() {
@@ -379,7 +379,7 @@ function isoDateToDate(s) {
   var p = s.split(' ');
   var ymd = p[0].split('-');
   var hm = p[1].split(':');
-  return new Date(
+  var d = new Date(
      ymd[0]
     ,ymd[1] - 1
     ,ymd[2]
@@ -387,4 +387,5 @@ function isoDateToDate(s) {
     ,hm[1]
     ,hm[2]
   );
+  return new Date(d.getTime() - d.getTimezoneOffset() * 60000);
 }

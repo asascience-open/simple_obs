@@ -253,7 +253,7 @@ function getObs(f,l) {
       if (map.popup && map.popup.name == f.attributes.name) {
         popup(f);
       }
-      // setTimeout(function(){getObs(f,l)},timeseriesRefreshInterval);
+      setTimeout(function(){getObs(f,l)},timeseriesRefreshInterval);
     }
   );
 }

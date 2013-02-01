@@ -6,7 +6,9 @@ LOG_FILE=True
 STATIONS =  {
               "PierJ" :   {
                 "location" : (-118.185,33.73166666666667),
-                "instant" : os.path.join(os.path.dirname(__file__), "..","tests","resources","pier_j_instant.dat"),
+                "instant" : [
+                  os.path.join(os.path.dirname(__file__), "..","tests","resources","pier_j_instant.dat")
+                ],
                 "history" : [
                   os.path.join(os.path.dirname(__file__), "..","tests","resources","pier_j_wind.dat")
                 ],
@@ -16,7 +18,9 @@ STATIONS =  {
 
               "PierS" :   {
                 "location" : (-118.225,33.69333333333333),
-                "instant" : os.path.join(os.path.dirname(__file__), "..","tests","resources","pier_s_instant.dat"),
+                "instant" : [
+                  os.path.join(os.path.dirname(__file__), "..","tests","resources","pier_s_instant.dat")
+                ],
                 "history" : [
                   os.path.join(os.path.dirname(__file__), "..","tests","resources","pier_s_wind.dat")
                 ],
@@ -26,7 +30,10 @@ STATIONS =  {
 
               "PierF" :   {
                 "location" : (-118.26666666666667,33.74833333333333),
-                "instant" : os.path.join(os.path.dirname(__file__), "..","tests","resources","pier_f_instant.dat"),
+                "instant" : [
+                  os.path.join(os.path.dirname(__file__), "..","tests","resources","pier_f_instant.dat"),
+                  os.path.join(os.path.dirname(__file__), "..","tests","resources","pier_f_gust.dat")
+                ],
                 "history" : [
                   os.path.join(os.path.dirname(__file__), "..","tests","resources","pier_f_met.dat"),
                   os.path.join(os.path.dirname(__file__), "..","tests","resources","pier_f_wind.dat")
@@ -108,5 +115,12 @@ VAR_MAP = {
               "name"      : "Barometric Pressure",
               "standard"  : "air_pressure",
               "units"     : "mbar"
+            },
+
+            "dew_point" : {
+              "name"      : "Dew Point",
+              "standard"  : "dew_point",
+              "units"     : "°C"
             }
+
           }

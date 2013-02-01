@@ -40,7 +40,7 @@ def data(station_id):
     records = request.args.get("records", None)
 
     if records is None:
-        data_paths = station_data.get("instant")
+        data_paths = filter(None, station_data.get("instant", None))
         records = 1
     else:
         data_paths = filter(None, station_data.get("history", None))

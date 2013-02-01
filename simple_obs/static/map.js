@@ -4,7 +4,7 @@ var times = {};
 var timeseriesRefreshInterval = 5000; // miliseconds
 var maxTimeseriesCount        = 500;  // # of obs in graph (moving window)
 
-var mode = "dev";
+var mode = "";
 
 // Get rid of address bar on iphone/ipod
 var fixSize = function() {

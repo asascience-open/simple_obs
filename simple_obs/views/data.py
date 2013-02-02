@@ -103,6 +103,7 @@ def get_data(filenames, records, format):
     for filename in filenames:
 
         header = None
+        data = []
 
         try:
             with open(filename) as f:

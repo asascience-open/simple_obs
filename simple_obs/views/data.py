@@ -102,6 +102,9 @@ def get_data(filenames, records, format):
 
     for filename in filenames:
 
+        if not os.path.exists(filename):
+            continue
+
         header = None
         data = []
 

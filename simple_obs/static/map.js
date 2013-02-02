@@ -1,8 +1,8 @@
 var map;
 var obs   = {};
 var times = {};
-var timeseriesRefreshInterval = 5000; // miliseconds
-var maxTimeseriesCount        = 500;  // # of obs in graph (moving window)
+var timeseriesRefreshInterval = 15000; // miliseconds
+var maxTimeseriesCount        = 1200;  // # of obs in graph (moving window)
 
 var mode = "";
 
